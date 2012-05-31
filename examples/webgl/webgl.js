@@ -64,7 +64,7 @@ MM.WebGL = function(map, dimensions) {
     this.coord = map.locationCoordinate(loc); 
 
     try {
-        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        gl = canvas.getContext("webgl", {antialias:true}) || canvas.getContext("experimental-webgl", {antialias:true});
     }
     catch(e) {}
 
@@ -99,7 +99,7 @@ MM.WebGL.prototype = {
           " return mercator*pow(2.0, zoom)*tileSize;" + 
           "}" + 
           "void main() {"+
-          " gl_PointSize = zoom; "+
+          " gl_PointSize = 2.0*zoom; "+
           " vec2 coord = latlon2coord(pos);" +
           " vec2 mapCoord = latlon2coord(mapPos);" +
           " vec2 p = coord - mapCoord; " +
@@ -107,17 +107,17 @@ MM.WebGL.prototype = {
           "}",
           "precision highp float;"+
           "void main() {"+
-          " vec2 p = gl_PointCoord + vec2(-.5, -.5);" +
+          " vec2 p = gl_PointCoord + vec2(-0.5, -0.5);" +
           " float d = sqrt(p.x*p.x+p.y*p.y);"+
-          " gl_FragColor = vec4(0, 0, 0, step(0.7,  1.0 - d));"+
+          " gl_FragColor = vec4(0, 0, 0, smoothstep(0.4, 0.7, 1.0-d));"+
           "}"
         );
         this.program = prog;
         gl.useProgram(prog);
         var points = [];
-        for(var i = 0; i < 65000; ++i) {
-            points.push(10*2*(Math.random() - 0.5));
-            points.push(10*2*(Math.random() - 0.5));
+        for(var i = 0; i < 6500; ++i) {
+            points.push(10*20*(Math.random() - 0.5));
+            points.push(10*40*(Math.random() - 0.5));
         }
         this.vertexBuffer = createVertexBuffer(gl, 2, points);
         setBufferData(gl, prog, "pos", this.vertexBuffer);
@@ -132,6 +132,8 @@ MM.WebGL.prototype = {
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         /*var total = 100000;
@@ -149,7 +151,7 @@ MM.WebGL.prototype = {
         var c =  this.map.getCenter();
         gl.uniform2fv(mapPos, [c.lat, c.lon]);
 
-        gl.drawArrays(gl.POINTS, 0, 65000);
+        gl.drawArrays(gl.POINTS, 0, 6500);
 
         var err = gl.errorValue;
         if(err != 0) {
