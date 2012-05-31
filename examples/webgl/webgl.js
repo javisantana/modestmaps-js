@@ -99,7 +99,7 @@ MM.WebGL.prototype = {
           " return mercator*pow(2.0, zoom)*tileSize;" + 
           "}" + 
           "void main() {"+
-          " gl_PointSize = 2.0*zoom; "+
+          " gl_PointSize = 16.0;"+ //*zoom;
           " vec2 coord = latlon2coord(pos);" +
           " vec2 mapCoord = latlon2coord(mapPos);" +
           " vec2 p = coord - mapCoord; " +
@@ -109,7 +109,8 @@ MM.WebGL.prototype = {
           "void main() {"+
           " vec2 p = gl_PointCoord + vec2(-0.5, -0.5);" +
           " float d = sqrt(p.x*p.x+p.y*p.y);"+
-          " gl_FragColor = vec4(0, 0, 0, smoothstep(0.4, 0.7, 1.0-d));"+
+          " vec4 pnt = mix(vec4(1, 1, 1, 1), vec4(1, 0.4, 0, 1), smoothstep(0.6,0.68, 1.0-d));" +
+          "gl_FragColor = mix(pnt,vec4(0, 0, 0, 0), smoothstep(0.6,0.4,1.0-d));" +
           "}"
         );
         this.program = prog;
