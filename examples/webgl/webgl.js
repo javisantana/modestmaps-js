@@ -117,7 +117,7 @@ MM.WebGL.prototype = {
         gl.useProgram(prog);
         var points = [];
         for(var i = 0; i < 6500; ++i) {
-            points.push(10*20*(Math.random() - 0.5));
+            points.push(10*17*(Math.random() - 0.5));
             points.push(10*40*(Math.random() - 0.5));
         }
         this.vertexBuffer = createVertexBuffer(gl, 2, points);
