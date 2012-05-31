@@ -140,7 +140,6 @@ MM.WebGL.prototype = {
             console.log(i);
             gl.drawArrays(gl.POINTS, i*n, 65000);
         }*/
-        gl.drawArrays(gl.POINTS, 0, 65000);
 
         var mapSize = gl.getUniformLocation(this.program, "mapSize");
         gl.uniform2fv(mapSize, [this.canvas.width, this.canvas.height]);
@@ -149,7 +148,8 @@ MM.WebGL.prototype = {
         var mapPos = gl.getUniformLocation(this.program, "mapPos");
         var c =  this.map.getCenter();
         gl.uniform2fv(mapPos, [c.lat, c.lon]);
-        console.log(c.lat, c.lon);
+
+        gl.drawArrays(gl.POINTS, 0, 65000);
 
         var err = gl.errorValue;
         if(err != 0) {
